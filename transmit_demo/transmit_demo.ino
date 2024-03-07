@@ -13,6 +13,10 @@ RF24 radio(9, 8);  // CE, CSN
 //CSN pin is a chip selection pin and turns on and off to recieve or transmit signal
 //if you followed the provided wiring diagram then you do not need to change these
 
+const int xPin = 0;
+const int yPin = 1;
+const int jSW = 2;
+const int nSW = 4;
 //a structure is a variable that can hold more variables
 //think of it like a filing cabnet with as many files in it as you want
 //where each file is a different variable packaged into the larger structure DataPacket
@@ -24,7 +28,11 @@ struct DataPacket {
   //You MUST initialize a variable corresponding to each sensor value you decide to use
   //Examples inlcude: a joystick's x and y value and its button, or another button or sensor of your choosing
   //Here to show an example I am creating a character - a variable that can hold a single letter
-  char StrHey;//character variable
+  //char StrHey;//character variable
+  int jX;
+  int jY;
+  int jSwitch;
+  int nSwitch;
 
   //THIS IS YOUR TRANSMISSION VARIABALE INITIALIZATION BLOCK
 
@@ -49,6 +57,11 @@ void setup() {
   radio.openWritingPipe(address);//set transmission address to 5-digit number above
   //Set module as transmitter
   radio.stopListening();
+
+  pinMode(jSW, INPUT);
+  digitalWrite(jSW, HIGH);
+  pinMode(nSW, INPUT);
+  digitalWrite(nSW, HIGH);
   Serial.begin(9600);//you better know what this does
 }
 
@@ -59,12 +72,16 @@ void loop() {
   //This is where you will allocate values to the initialized variables in your DataPacket STRUCTure
   //YOU WILL NEED TO DO THIS FOR EACH SENSOR READING
   //TL;DR - read each sensor and save its readings to an initialized variables above
-  data.StrHey = 'a';//assign your favorite letter - characters are in single quotes
+  //data.StrHey = 'a';//assign your favorite letter - characters are in single quotes
   //saving that character variable into our data variable which is in our DataPacket structure
+  data.jX = analogRead(xPin);
+  data.jY = analogRead(yPin);
+  data.jSwitch = digitalRead(jSW);
+  data.nSwitch = digitalRead(nSW);
 
   //THIS IS the end of YOUR VARIABALE ALLOCATION BLOCK
 
-  Serial.println(data.StrHey);//print the variable were transmitting here
+  //Serial.println(data.StrHey);//print the variable were transmitting here
   //not necessary but just for funsies
   radio.write(&data, sizeof(DataPacket));//transmit data
   //here we are transmitting the structure 'data' within the strucure 'DataPacket'
