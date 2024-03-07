@@ -13,8 +13,12 @@ struct DataPacket {
   //Yes, this is and must be the same block from your transmitter code
   //Again, yes, you must have the same transmission variables...
   //  In the reciever code as you do in the transmitter code
-  char StrHey;//character variable
+  //char StrHey;//character variable
 
+  int jX;
+  int jY;
+  int jSwitch;
+  int nSwitch;
   //THIS IS YOUR TRANSMISSION VARIABALE INITIALIZATION BLOCK
 
 };
@@ -40,8 +44,12 @@ void loop() {
     radio.read(&data, sizeof(DataPacket));//read signal being sent
     //the data structure is now here - weeeeeeeeeeeee
 
+    Serial.println(data.jX);
+    Serial.println(data.jY);
+    Serial.println(data.jSwitch);
+    Serial.println(data.nSwitch);
     //we can now use variables in this void loop(). SICK!
-    Serial.println(data.StrHey);//print that variable we created and transmitted
+    //Serial.println(data.StrHey);//print that variable we created and transmitted
     //what do you think it will print?!
 
   }
