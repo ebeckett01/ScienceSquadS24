@@ -21,25 +21,11 @@ const int nSW = 4;
 //think of it like a filing cabnet with as many files in it as you want
 //where each file is a different variable packaged into the larger structure DataPacket
 struct DataPacket {
-
-  //THIS IS YOUR TRANSMISSION VARIABALE INITIALIZATION BLOCK
-
-  //THIS is where you will initialize all variables for the control of the CoLeBot
-  //You MUST initialize a variable corresponding to each sensor value you decide to use
-  //Examples inlcude: a joystick's x and y value and its button, or another button or sensor of your choosing
-  //Here to show an example I am creating a character - a variable that can hold a single letter
-  //char StrHey;//character variable
   int jX;
   int jY;
   int jSwitch;
   int nSwitch;
-
-  //THIS IS YOUR TRANSMISSION VARIABALE INITIALIZATION BLOCK
-
 };
-
-//assign a variable to hold all of the desired data to be transmitted
-//in this case our variable is called 'data'
 DataPacket data;
 
 //create a unique 'address' for your tx and rx

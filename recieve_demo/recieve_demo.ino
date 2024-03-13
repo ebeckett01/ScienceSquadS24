@@ -2,33 +2,18 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-
+// Create Receiver object
 RF24 radio(9, 8);  // CE, CSN
-
-//Yes you have to have same structure variable 'DataPacket' 
+// Data Packet structer must match transceiver
 struct DataPacket {
-
-  //THIS IS YOUR TRANSMISSION VARIABALE INITIALIZATION BLOCK
-  
-  //Yes, this is and must be the same block from your transmitter code
-  //Again, yes, you must have the same transmission variables...
-  //  In the reciever code as you do in the transmitter code
-  //char StrHey;//character variable
-
   int jX;
   int jY;
   int jSwitch;
   int nSwitch;
-  //THIS IS YOUR TRANSMISSION VARIABALE INITIALIZATION BLOCK
-
 };
-
-//check transmit_demo if confused - all of this is the same
-DataPacket data; //same structure variables 'DataPacket and 'data' as transmitter
-
+DataPacket data;
 //address through which two modules communicate.
 const byte address[6] = "83287";
-
 
 void setup() {
   radio.begin();
