@@ -51,6 +51,14 @@ const int servo2Pin = 0;
 // Servo Objects
 Servo servo1;
 Servo servo2;
+int servo1Angle = 0;
+int servo2Angle = 0;
+// Claw Min and Maxes
+int clawMin = 0;
+int clawMax = 180;
+// Arm Min and Maxes
+int armMin = 0;
+int armMax = 180;
 void setup() {
   // Motor 1 Setup
   pinMode(enable1, OUTPUT);
@@ -72,7 +80,16 @@ void setup() {
   Serial.begin(9600);
 }
 void setServoAngle(int servo, int angle){
-  // TODO
+  // Set servo angle and update tracking variable
+  if(servo == 1){
+    servo1.write(angle);
+    servo1Angle = angle;
+  }else{
+    servo2.write(angle);
+    servo2Angle = angle;
+  }
+  // Wait for servo to move to that location
+  delay(15);
 }
 void setMotorSpeed(int motor,int speed, direction dir){
   // Select the pins for the correct motor
@@ -122,6 +139,87 @@ void printDataPacket(){
     Serial.print(data.b2);
     Serial.print("\nPotentiometer:");
     Serial.println(data.p);
+}
+int convert(int value){
+  // 0 = -100
+  // 512 = 0
+  // 1023 = 100
+  if(value < 500 ){
+    return -int((value/500.0)*100);
+  }else if(value > 524){
+    return int((((value-524))/500.0)*100);
+  }else{
+    return 0;
+  }
+}
+void updateMotorSpeeds(){
+  // Motor 1 = Joystick 1
+  // Convert J1Y values to percentages
+  int m1dir = convert(data.j1Y);
+  // Set Motor 1 speed percentage
+  if(m1dir == 0){
+    setMotorSpeed(1,0,STOP);
+  }else if(m1dir< 0){
+    setMotorSpeed(1,abs(m1dir),REVERSE);
+  }else{
+    setMotorSpeed(1,m1dir,FORWARD);
+  }
+
+  // Motor 2 = Joystick 2
+  // Convert J2Y values to percentages
+  int m2dir = convert(data.j2Y);
+  // Set Motor 2 speed percentage
+  if(m2dir == 0){
+    setMotorSpeed(2,0,STOP);
+  }else if(m2dir< 0){
+    setMotorSpeed(2,abs(m2dir),REVERSE);
+  }else{
+    setMotorSpeed(2,m2dir,FORWARD);
+  }
+}
+void updateServoPositions(){
+  int rate = 10;
+  // Servo 1 = claw
+  // Servo 2 = arm
+  // Convert X vals of Joysticks to servo positions
+  int s1dir = convert(data.j1X);
+  int newServo1Pos = servo1Angle;
+  if(s1dir>0){
+    newServo1Pos += rate;
+  }else if(s1dir<0){
+    newServo1Pos += rate;
+  }
+  // Ensure that angle we set to is not above/below max/min
+  if(newServo1Pos > clawMax){
+    newServo1Pos = clawMax;
+  }
+  if(newServo1Pos< clawMin){
+    newServo1Pos = clawMin;
+  }
+  // Convert X vals of Joysticks to servo positions
+  int s2dir = convert(data.j2X);
+  int newServo2Pos = servo2Angle;
+  if(s2dir>0){
+    newServo2Pos += rate;
+  }else if(s1dir<0){
+    newServo2Pos += rate;
+  }
+  // Ensure that angle we set to is not above/below max/min
+  if(newServo2Pos > armMax){
+    newServo2Pos = armMax;
+  }
+  if(newServo2Pos< armMin){
+    newServo2Pos = armMin;
+  }
+
+  // Check if it is different from current servo position
+  if(newServo1Pos != servo1Angle){
+    setServoAngle(1,newServo1Pos);
+  }
+  if(newServo2Pos != servo2Angle){
+    setServoAngle(1,newServo2Pos);
+  }
+  // As needed update servo angles
 }
 void loop() {
   if (radio.available()) {//if a signal is available
