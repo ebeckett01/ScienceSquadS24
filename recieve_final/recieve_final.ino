@@ -178,6 +178,17 @@ void updateMotorSpeeds(){
   }
 }
 void updateServoPositions(){
+  if(data.b1 ==0){
+    setServoAngle(1,0);
+  }else{
+    setServoAngle(1,180);
+  }
+  if(data.b2 ==0){
+    setServoAngle(2,0);
+  }else{
+    setServoAngle(2,180);
+  }
+  /*
   int rate = 10;
   // Servo 1 = claw
   // Servo 2 = arm
@@ -220,6 +231,7 @@ void updateServoPositions(){
     setServoAngle(1,newServo2Pos);
   }
   // As needed update servo angles
+  */
 }
 void loop() {
   if (radio.available()) {//if a signal is available
