@@ -145,7 +145,7 @@ int convert(int value){
   // 512 = 0
   // 1023 = 100
   if(value < 500 ){
-    return -int((value/500.0)*100);
+    return -(100-int((value/500.0)*100));
   }else if(value > 524){
     return int((((value-524))/500.0)*100);
   }else{
@@ -155,7 +155,7 @@ int convert(int value){
 void updateMotorSpeeds(){
   // Motor 1 = Joystick 1
   // Convert J1Y values to percentages
-  int m1dir = convert(data.j1Y);
+  int m1dir = convert(data.j1Y)*(int(255.0/100));
   // Set Motor 1 speed percentage
   if(m1dir == 0){
     setMotorSpeed(1,0,STOP);
@@ -167,7 +167,7 @@ void updateMotorSpeeds(){
 
   // Motor 2 = Joystick 2
   // Convert J2Y values to percentages
-  int m2dir = convert(data.j2Y);
+  int m2dir = convert(data.j2Y)*(int(255.0/100));
   // Set Motor 2 speed percentage
   if(m2dir == 0){
     setMotorSpeed(2,0,STOP);

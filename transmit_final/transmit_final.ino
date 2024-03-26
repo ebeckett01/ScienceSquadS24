@@ -27,12 +27,12 @@ const byte address[6] = "83287";
 // Sensor Pins
 int j_1_y = A1; // Joystick 1 y pin
 int j_1_x = A0; // Joystick 1 x pin
-int j_1_b = 2;  // Joystick 1 button pin
-int j_2_y = A1; // Joystick 2 y pin
-int j_2_x = A0; // Joystick 2 x pin
-int j_2_b = 2;  // Joystick 2 button pin
-int p_pin = A2; // Potentiometer pin
-int b_1_pin = 4;// Button 1 pin
+int j_1_b = 10;  // Joystick 1 button pin
+int j_2_y = A3; // Joystick 2 y pin
+int j_2_x = A2; // Joystick 2 x pin
+int j_2_b = 7;  // Joystick 2 button pin
+int p_pin = A4; // Potentiometer pin
+int b_1_pin = 2;// Button 1 pin
 int b_2_pin = 4;// Button 2 pin
 
 // State Trackers
@@ -73,6 +73,7 @@ void setup() {
   radio.openWritingPipe(address);
   radio.stopListening();
   Serial.begin(9600);//you better know what this does
+  Serial.println("Start");
 }
 void updateJoysticks(){
   // get Joystick 1 button state
@@ -108,12 +109,34 @@ void updateDataPacket(){
   data.j2Y = j_2_y_state;
   data.j2Switch = j_2_b_state;
 }
+void printDataPacket(){
+    // Log data being sent
+    Serial.print("Joystick 1 x:");
+    Serial.print(data.j1X);
+    Serial.print(" y:");
+    Serial.print(data.j1Y);
+    Serial.print(" b:");
+    Serial.print(data.j1Switch);
+    Serial.print("\nJoystick 2 x:");
+    Serial.print(data.j2X);
+    Serial.print(" y:");
+    Serial.print(data.j2Y);
+    Serial.print(" b:");
+    Serial.print(data.j2Switch);
+    Serial.print("\nButton 1:");
+    Serial.print(data.b1);
+    Serial.print("\nButton 2:");
+    Serial.print(data.b2);
+    Serial.print("\nPotentiometer:");
+    Serial.println(data.p);
+}
 void loop() {
   time = millis();
   updateSensors();
   updateDataPacket();
   // Transmits every 20 ms;
-  if(time % 20 == 0){
-    radio.write(&data, sizeof(DataPacket));//transmit data
+  radio.write(&data, sizeof(DataPacket));//transmit data
+  if(time % 200 == 0){
+    printDataPacket();
   }
 }
