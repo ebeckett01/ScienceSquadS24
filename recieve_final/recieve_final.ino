@@ -38,16 +38,16 @@ Bat +ve 8        9   M2 PWM
 
 */
 // Motor 1 pins
-const int enable1 = 0; // M1 PWM
-const int drive1A = 0; // M1 0/1
-const int drive1B = 0; // M1 1/0
+const int enable1 = A1; // M1 PWM
+const int drive1A = 2; // M1 0/1
+const int drive1B = 7; // M1 1/0
 // Motor 2 pins
-const int enable2 = 0; // M2 PWM
-const int drive2A = 0; // M2 0/1
-const int drive2B = 0; // M2 1/0
+const int enable2 = 3; // M2 PWM
+const int drive2A = 4; // M2 0/1
+const int drive2B = A2; // M2 1/0
 // Servo pins
-const int servo1Pin = 0;
-const int servo2Pin = 0;
+const int servo1Pin = 5;
+const int servo2Pin = 6;
 // Servo Objects
 Servo servo1;
 Servo servo2;
@@ -224,6 +224,8 @@ void updateServoPositions(){
 void loop() {
   if (radio.available()) {//if a signal is available
     radio.read(&data, sizeof(DataPacket));//read signal being sent
+    updateMotorSpeeds();
+    updateServoPositions();
     printDataPacket();
   }
 }
