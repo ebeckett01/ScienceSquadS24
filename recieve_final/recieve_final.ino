@@ -153,6 +153,10 @@ int convert(int value){
   }
 }
 void updateMotorSpeeds(){
+  /*  TODO
+      Add in variable speed based on potentiometer speeds 
+          Not just joystick values
+  */
   // Motor 1 = Joystick 1
   // Convert J1Y values to percentages
   int m1dir = convert(data.j1Y)*(int(255.0/100));
@@ -178,66 +182,57 @@ void updateMotorSpeeds(){
   }
 }
 void updateServoPositions(){
-  if(data.b1 ==0){
-    setServoAngle(1,0);
-  }else{
-    setServoAngle(1,180);
+  int clawRate = 0;
+  // Convert joystick 1 position to direction
+  if(convert(data.j1X)<-50){
+    clawRate = -1;
+  }else if(convert(data.j1X)>50){
+    clawRate = 1;
   }
-  if(data.b2 ==0){
-    setServoAngle(2,0);
-  }else{
-    setServoAngle(2,180);
+  // Calc new angle for servo 1
+  int clawNewAngle = servo1Angle+clawRate;
+  // Limit angle for servo 1 to be between values
+  if(servo1Angle+clawRate > clawMax){
+    clawNewAngle = clawMax;
   }
-  /*
-  int rate = 10;
-  // Servo 1 = claw
-  // Servo 2 = arm
-  // Convert X vals of Joysticks to servo positions
-  int s1dir = convert(data.j1X);
-  int newServo1Pos = servo1Angle;
-  if(s1dir>0){
-    newServo1Pos += rate;
-  }else if(s1dir<0){
-    newServo1Pos += rate;
-  }
-  // Ensure that angle we set to is not above/below max/min
-  if(newServo1Pos > clawMax){
-    newServo1Pos = clawMax;
-  }
-  if(newServo1Pos< clawMin){
-    newServo1Pos = clawMin;
-  }
-  // Convert X vals of Joysticks to servo positions
-  int s2dir = convert(data.j2X);
-  int newServo2Pos = servo2Angle;
-  if(s2dir>0){
-    newServo2Pos += rate;
-  }else if(s1dir<0){
-    newServo2Pos += rate;
-  }
-  // Ensure that angle we set to is not above/below max/min
-  if(newServo2Pos > armMax){
-    newServo2Pos = armMax;
-  }
-  if(newServo2Pos< armMin){
-    newServo2Pos = armMin;
+  if(servo1Angle+clawRate < clawMin){
+    clawNewAngle = clawMin;
   }
 
-  // Check if it is different from current servo position
-  if(newServo1Pos != servo1Angle){
-    setServoAngle(1,newServo1Pos);
+  int armRate = 0;
+  // Convert joystick 2 position to direction
+  if(convert(data.j2X)<-50){
+    armRate = -1;
+  }else if(convert(data.j2X)>50){
+    armRate = 1;
   }
-  if(newServo2Pos != servo2Angle){
-    setServoAngle(1,newServo2Pos);
+  // Calc new angle for servo 2
+  int armNewAngle = servo2Angle+armRate;
+  // Limit angle for servo 2 to be between values
+  if(servo2Angle+armRate > armMax){
+    armNewAngle = armMax;
   }
-  // As needed update servo angles
+  if(servo1Angle+armRate < armMin){
+    armNewAngle = armMin;
+  }
+  /*  TODO
+      Add in buttons for setting servo angle to preset
+        Ensure Buttons override joystick in positions
   */
+  // Update servo 1 position
+  if(servo1Angle != clawNewAngle){
+    setServoAngle(1,clawNewAngle);
+  }
+  // Update servo 2 position
+  if(servo2Angle != armNewAngle){
+    setServoAngle(2,armNewAngle);
+  }
 }
 void loop() {
   if (radio.available()) {//if a signal is available
     radio.read(&data, sizeof(DataPacket));//read signal being sent
-    updateMotorSpeeds();
-    updateServoPositions();
-    printDataPacket();
+    updateMotorSpeeds(); // Update motor directions and speeds
+    updateServoPositions(); // Update servo positions
+    printDataPacket(); // Print out data packett
   }
 }
