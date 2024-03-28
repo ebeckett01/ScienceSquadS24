@@ -68,7 +68,7 @@ void setup() {
   pinMode(enable2, OUTPUT);
   pinMode(drive2A, OUTPUT);
   pinMode(drive2B, OUTPUT);
-  // Servo 1 Setup
+  // Servo Setup
   servo1.attach(servo1Pin);
   servo2.attach(servo2Pin);
   // Radio Setup
@@ -76,6 +76,9 @@ void setup() {
   radio.setPALevel(RF24_PA_LOW);
   radio.openReadingPipe(0, address);
   radio.startListening();
+  // Servo init
+  servo1.write(90);
+  servo2.write(45);
   // Serial Setup
   Serial.begin(9600);
 }
@@ -228,11 +231,18 @@ void updateServoPositions(){
     setServoAngle(2,armNewAngle);
   }
 }
+void printServoValues(){
+  Serial.print("Servo 1 (claw): ");
+  Serial.print(servo1Angle);
+  Serial.print("\nServo 2  (arm):");
+  Serial.print(servo2Angle);
+}
 void loop() {
   if (radio.available()) {//if a signal is available
     radio.read(&data, sizeof(DataPacket));//read signal being sent
     updateMotorSpeeds(); // Update motor directions and speeds
     updateServoPositions(); // Update servo positions
-    printDataPacket(); // Print out data packett
+    //printDataPacket(); // Print out data packett
+    printServoValues(); // Print out servo values
   }
 }
