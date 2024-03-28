@@ -59,6 +59,8 @@ int clawMax = 180;
 // Arm Min and Maxes
 int armMin = 0;
 int armMax = 180;
+
+bool start = true;
 void setup() {
   // Motor 1 Setup
   pinMode(enable1, OUTPUT);
@@ -76,9 +78,7 @@ void setup() {
   radio.setPALevel(RF24_PA_LOW);
   radio.openReadingPipe(0, address);
   radio.startListening();
-  // Servo init
-  servo1.write(90);
-  servo2.write(45);
+
   // Serial Setup
   Serial.begin(9600);
 }
@@ -215,7 +215,7 @@ void updateServoPositions(){
   if(servo2Angle+armRate > armMax){
     armNewAngle = armMax;
   }
-  if(servo1Angle+armRate < armMin){
+  if(servo2Angle+armRate < armMin){
     armNewAngle = armMin;
   }
   /*  TODO
@@ -232,12 +232,17 @@ void updateServoPositions(){
   }
 }
 void printServoValues(){
-  Serial.print("Servo 1 (claw): ");
+  Serial.print("\nServo 1 (claw): ");
   Serial.print(servo1Angle);
   Serial.print("\nServo 2  (arm):");
   Serial.print(servo2Angle);
 }
 void loop() {
+  /*if (start == true) {
+    setServoAngle(1,90);
+    setServoAngle(2,45);
+    start = false;
+  }*/
   if (radio.available()) {//if a signal is available
     radio.read(&data, sizeof(DataPacket));//read signal being sent
     updateMotorSpeeds(); // Update motor directions and speeds
