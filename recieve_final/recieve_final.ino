@@ -51,14 +51,14 @@ const int servo2Pin = 6;
 // Servo Objects
 Servo servo1;
 Servo servo2;
-int servo1Angle = 0;
-int servo2Angle = 0;
+int servo1Angle = 90;
+int servo2Angle = 90;
 // Claw Min and Maxes
-int clawMin = 0;
-int clawMax = 180;
+int clawMin = 90;
+int clawMax = 159;
 // Arm Min and Maxes
-int armMin = 0;
-int armMax = 180;
+int armMin = 67;
+int armMax = 135;
 
 bool start = true;
 void setup() {
@@ -99,20 +99,20 @@ void setMotorSpeed(int motor,int speed, direction dir){
   int motorSpeedPin = -1;
   int drive1 = -1;
   int drive2 = -1;
-  if(motor == 1){
+  if(motor == 2){
     motorSpeedPin = enable1;
     drive1 = drive1A;
     drive2 = drive1B;
-  }else if(motor ==2){
+  }else if(motor == 1){
     motorSpeedPin = enable2;
     drive1 = drive2A;
     drive2 = drive2B;
   }
   // Convert direction for motor
-  if(dir == FORWARD){
+  if(dir == REVERSE){
     digitalWrite(drive1, HIGH);
     digitalWrite(drive2, LOW);
-  }else if(dir == REVERSE){
+  }else if(dir == FORWARD){
     digitalWrite(drive1, LOW);
     digitalWrite(drive2, HIGH);
   }else{
@@ -237,6 +237,23 @@ void printServoValues(){
   Serial.print("\nServo 2  (arm):");
   Serial.print(servo2Angle);
 }
+void dance() {
+  if(data.j1Switch == 0){
+    for(int i = 0; i < 2; i++){
+      setMotorSpeed(2,200,FORWARD);
+      setMotorSpeed(1,200,REVERSE);
+
+      setServoAngle(2, armMax);
+      delay(1000);
+
+      setMotorSpeed(2,200,REVERSE);
+      setMotorSpeed(1,200,FORWARD);
+
+      setServoAngle(2, armMin);
+      delay(1000);
+    }
+  }
+}
 void loop() {
   /*if (start == true) {
     setServoAngle(1,90);
@@ -249,5 +266,6 @@ void loop() {
     updateServoPositions(); // Update servo positions
     //printDataPacket(); // Print out data packett
     printServoValues(); // Print out servo values
+    dance();
   }
 }
