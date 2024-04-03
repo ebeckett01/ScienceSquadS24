@@ -55,9 +55,9 @@ int servo1Angle = 90;
 int servo2Angle = 90;
 // Claw Min and Maxes
 int clawMin = 90;
-int clawMax = 159;
+int clawMax = 137;
 // Arm Min and Maxes
-int armMin = 67;
+int armMin = 64;
 int armMax = 135;
 
 bool start = true;
@@ -162,11 +162,16 @@ void updateMotorSpeeds(){
   */
   // Motor 1 = Joystick 1
   // Convert J1Y values to percentages
-  int m1dir = convert(data.j1Y)*(int(255.0/100));
+  int m1dir = convert(data.j1Y);
+  if(m1dir < 90){
+    m1dir = m1dir*(int(175.0/100));
+  }else{
+    m1dir = m1dir*(int(255.0/100));
+  }
   // Set Motor 1 speed percentage
   if(m1dir == 0){
     setMotorSpeed(1,0,STOP);
-  }else if(m1dir< 0){
+  }else if(m1dir < 0){
     setMotorSpeed(1,abs(m1dir),REVERSE);
   }else{
     setMotorSpeed(1,m1dir,FORWARD);
@@ -174,11 +179,16 @@ void updateMotorSpeeds(){
 
   // Motor 2 = Joystick 2
   // Convert J2Y values to percentages
-  int m2dir = convert(data.j2Y)*(int(255.0/100));
+  int m2dir = convert(data.j2Y);
+  if(abs(m2dir) < 90){
+    m2dir = m2dir*(int(175.0/100));
+  }else{
+    m2dir = m2dir*(int(255.0/100));
+  }
   // Set Motor 2 speed percentage
   if(m2dir == 0){
     setMotorSpeed(2,0,STOP);
-  }else if(m2dir< 0){
+  }else if (m2dir < 0){
     setMotorSpeed(2,abs(m2dir),REVERSE);
   }else{
     setMotorSpeed(2,m2dir,FORWARD);
@@ -188,9 +198,9 @@ void updateServoPositions(){
   int clawRate = 0;
   // Convert joystick 1 position to direction
   if(convert(data.j1X)<-50){
-    clawRate = -1;
+    clawRate = -2;
   }else if(convert(data.j1X)>50){
-    clawRate = 1;
+    clawRate = 2;
   }
   // Calc new angle for servo 1
   int clawNewAngle = servo1Angle+clawRate;
@@ -205,9 +215,9 @@ void updateServoPositions(){
   int armRate = 0;
   // Convert joystick 2 position to direction
   if(convert(data.j2X)<-50){
-    armRate = -1;
+    armRate = -2;
   }else if(convert(data.j2X)>50){
-    armRate = 1;
+    armRate = 2;
   }
   // Calc new angle for servo 2
   int armNewAngle = servo2Angle+armRate;
@@ -239,7 +249,6 @@ void printServoValues(){
 }
 void dance() {
   if(data.j1Switch == 0){
-    for(int i = 0; i < 2; i++){
       setMotorSpeed(2,200,FORWARD);
       setMotorSpeed(1,200,REVERSE);
 
@@ -251,7 +260,6 @@ void dance() {
 
       setServoAngle(2, armMin);
       delay(1000);
-    }
   }
 }
 void loop() {
