@@ -55,9 +55,9 @@ int servo1Angle = 90;
 int servo2Angle = 90;
 // Claw Min and Maxes
 int clawMin = 90;
-int clawMax = 137;
+int clawMax = 168;
 // Arm Min and Maxes
-int armMin = 64;
+int armMin = 50;
 int armMax = 135;
 
 bool start = true;
@@ -248,7 +248,7 @@ void printServoValues(){
   Serial.print(servo2Angle);
 }
 void dance() {
-  if(data.j1Switch == 0){
+  if(data.j1Switch == 0 && data.j2Switch == 0){
       setMotorSpeed(2,200,FORWARD);
       setMotorSpeed(1,200,REVERSE);
 
