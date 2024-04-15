@@ -1,14 +1,15 @@
 
 // Direction button pins
-int fBPin = ;
-int bBPin = ;
-bool dirToggle = 0;
+int fBPin = 13;
+int bBPin = 12;
+bool mftoggle = 0;
+bool mbtoggle = 0;
 
 // Torque value pins
 int torqueVal = 2.5;
-int torqueOut = HIGH;
-int tUpPin = ;
-int tDownPin = ;
+int torqueOut = torqueVal;
+int tUpPin = 11;
+int tDownPin = 10;
 /*
 int R1in = A0; 
 int R2out = A1;
@@ -22,13 +23,13 @@ float avgPower = 0;
 // Motor speed and direction pin
 int vSpeedPin = A3;
 int speedVal = 0;
-int Dir1Pin = ;
-int Dir2Pin = ;
-int enablePin = ;
+int Dir1Pin = 4;
+int Dir2Pin = 3;
+int enablePin = 5;
 
 void setup() {
-  pinMode(fBpin, INPUT_PULLUP);
-  pinMode(bBpin, INPUT_PULLUP);
+  pinMode(fBPin, INPUT_PULLUP);
+  pinMode(bBPin, INPUT_PULLUP);
 
   pinMode(tUpPin, INPUT_PULLUP);
   pinMode(tDownPin, INPUT_PULLUP);
@@ -37,7 +38,7 @@ void setup() {
   pinMode(Dir2Pin, OUTPUT);
   pinMode(enablePin, OUTPUT);
 
-  Serial.begin(9600)
+  Serial.begin(9600);
 }
 
 void motorSettings() {
@@ -46,23 +47,38 @@ void motorSettings() {
   analogWrite(enablePin, speedVal);
   
   if (digitalRead(fBPin) == LOW) {
-    digitalWrite(Dir2Pin, LOW);
-    digitalWrite(Dir1Pin, torqueOut);
-  } else if (digitalRead(bBPin) == LOW) {
-    digitalWrite(Dir2Pin, torqueOut);
-    digitalWrite(Dir1Pin, LOW);
+    if (mftoggle == 0){
+      digitalWrite(Dir1Pin, torqueOut);
+      mftoggle = 1;
+      digitalWrite(Dir2Pin, LOW);
+    } else {
+      digitalWrite(Dir1Pin, LOW);
+      mftoggle = 0;
+    }
+  }
+  if (digitalRead(bBPin) == LOW) {
+    if (mbtoggle == 0){
+      digitalWrite(Dir2Pin, torqueOut);
+      mbtoggle = 1;
+      digitalWrite(Dir1Pin, LOW);
+    } else {
+      digitalWrite(Dir2Pin, LOW);
+      mbtoggle = 0;
+    }
   }
 
 }
 
-void torqueSettigs() {
+void torqueSettings() {
   
   if (digitalRead(tUpPin) == LOW) {
     torqueVal = torqueVal + 0.5;
+    Serial.println("Pressed");
     if (torqueVal > 5) {
       torqueVal = 5;
     }
   } else if (digitalRead(tDownPin) == LOW) {
+    Serial.println("Pressed");
     torqueVal = torqueVal - 0.5;
     if (torqueVal < 0.5) {
       torqueVal = 0.5;
@@ -82,10 +98,10 @@ void torqueSettigs() {
 }
 
 void printInfo() {
-  Serial.print("Current speed: ")
-  Serial.println(speedVal)
-  Serial.print("Current torque: ")
-  Serial.println(torqueOut)
+  Serial.print("Current speed: ");
+  Serial.println(speedVal);
+  Serial.print("Current torque: ");
+  Serial.println(torqueOut);
 }
 
 void loop() {
