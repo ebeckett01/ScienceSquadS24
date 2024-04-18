@@ -19,7 +19,7 @@ float Power = 0;
 float avgpowercalculation = 0;
 int power_calc_iteration = 0;
 float avgPower = 0;
-float powerThreshold = ; // mW
+float powerThreshold = 22000; // mW
 
 
 // Motor speed and direction pin
@@ -46,9 +46,10 @@ void setup() {
 void motorSettings() {
   speedVal = analogRead(vSpeedPin);
   speedVal = speedVal * (255/1023.0);
-  analogWrite(enablePin, speedVal);
+  //analogWrite(enablePin, speedVal);
   
   if (digitalRead(fBPin) == LOW) {
+    Serial.println("Pressed");
     if (mftoggle == 0){
       digitalWrite(Dir1Pin, HIGH);
       mftoggle = 1;
@@ -59,6 +60,7 @@ void motorSettings() {
     }
   }
   if (digitalRead(bBPin) == LOW) {
+    Serial.println("Pressed");
     if (mbtoggle == 0){
       digitalWrite(Dir2Pin, HIGH);
       mbtoggle = 1;
@@ -75,12 +77,12 @@ void torqueSettings() {
   
   if (digitalRead(tUpPin) == LOW) {
     torqueVal++;
-    //Serial.println("Pressed");
+    Serial.println("Pressed");
     if (torqueVal > 10) {
       torqueVal = 10;
     }
   } else if (digitalRead(tDownPin) == LOW) {
-    //Serial.println("Pressed");
+    Serial.println("Pressed");
     torqueVal--;
     if (torqueVal < 1) {
       torqueVal = 1;
@@ -88,37 +90,42 @@ void torqueSettings() {
   }
 
   
-  Vin = analogRead(R1in) * (5/1023.0);
-  Vout = analogRead(R1out) * (5/1023.0);
+  Vin = analogRead(R1in);
+  Vout = analogRead(R2out);
   delay(10);
-  current = (Vout / (10 * 1000));
-  Power =  current * Vout;
+  current = ((Vin-Vout)/10)*1000;
+  Power =  (current * Vout)/1000;
 
-  if (power_calc_iteration < 5){
+  if (power_calc_iteration < 15){
     avgpowercalculation = avgpowercalculation + Power;
     power_calc_iteration++;
   }
   else {
-    avgPower = avgpowercalculation/5;
+    avgPower = avgpowercalculation/15;
     power_calc_iteration = 0;
     avgpowercalculation = 0;
   }
-  
-  if (avgPower < powerThreshold) {
-    analogWrite(enable_pin, 0);
+  //Serial.println(abs(avgPower));
+  if (abs(avgPower) > powerThreshold) {
+    analogWrite(enablePin, 0);
   } else {
-    analogWrite(enable_pin, speedVal);
+    analogWrite(enablePin, speedVal);
   }
 
 }
 
 void printInfo() {
-  Serial.print("Current speed: ");
-  Serial.println(speedVal);
-  Serial.print("Current torque: ");
-  Serial.println(torqueOut);
-  Serial.println("Power: ");
-  Serial.println(avgPower);
+  //Serial.print("Current speed: ");
+  //Serial.println(speedVal);
+  //Serial.print("Current torque: ");
+  //Serial.println(torqueVal);
+  //Serial.println("Power: ");
+  //Serial.println(avgPower);
+
+  //Serial.println("Vin: ");
+  //Serial.println(Vin);
+  //Serial.println("Vout: ");
+  //Serial.println(Vout);
 }
 
 void loop() {
