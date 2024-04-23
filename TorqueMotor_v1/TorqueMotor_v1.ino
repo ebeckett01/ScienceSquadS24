@@ -29,6 +29,26 @@ int Dir1Pin = 4;
 int Dir2Pin = 3;
 int enablePin = 5;
 
+// Button Variables
+unsigned long time = 0;
+unsigned long debounceTime = 50;
+unsigned long fBPress =0;
+unsigned long bBPress =0;
+unsigned long tuPress =0;
+unsigned long tdPress =0;
+// Torque Stall Settings
+int torque[] = {
+  10000, // Setting 1
+  11000, // Setting 2
+  12000, // Setting 3
+  13000, // Setting 4
+  14000, // Setting 5
+  15000, // Setting 6
+  16000, // Setting 7
+  17000, // Setting 8
+  18000, // Setting 9
+  20000, // Setting 10
+};
 void setup() {
   pinMode(fBPin, INPUT_PULLUP);
   pinMode(bBPin, INPUT_PULLUP);
@@ -44,48 +64,55 @@ void setup() {
 }
 
 void motorSettings() {
+  time = millis();
   speedVal = analogRead(vSpeedPin);
   speedVal = speedVal * (255/1023.0);
   //analogWrite(enablePin, speedVal);
-  
-  if (digitalRead(fBPin) == LOW) {
-    Serial.println("Pressed");
-    if (mftoggle == 0){
-      digitalWrite(Dir1Pin, HIGH);
-      mftoggle = 1;
-      digitalWrite(Dir2Pin, LOW);
-    } else {
-      digitalWrite(Dir1Pin, LOW);
-      mftoggle = 0;
+  if(time-fBPress > debounceTime){
+    if (digitalRead(fBPin) == LOW) {
+      Serial.println("Pressed");
+      if (mftoggle == 0){
+        digitalWrite(Dir1Pin, HIGH);
+        mftoggle = 1;
+        digitalWrite(Dir2Pin, LOW);
+      } else {
+        digitalWrite(Dir1Pin, LOW);
+        mftoggle = 0;
+      }
     }
   }
-  if (digitalRead(bBPin) == LOW) {
-    Serial.println("Pressed");
-    if (mbtoggle == 0){
-      digitalWrite(Dir2Pin, HIGH);
-      mbtoggle = 1;
-      digitalWrite(Dir1Pin, LOW);
-    } else {
-      digitalWrite(Dir2Pin, LOW);
-      mbtoggle = 0;
+  if(time - bBPress > debounceTime){
+    if (digitalRead(bBPin) == LOW) {
+      Serial.println("Pressed");
+      if (mbtoggle == 0){
+        digitalWrite(Dir2Pin, HIGH);
+        mbtoggle = 1;
+        digitalWrite(Dir1Pin, LOW);
+      } else {
+        digitalWrite(Dir2Pin, LOW);
+        mbtoggle = 0;
+      }
     }
   }
 
 }
 
 void torqueSettings() {
-  
-  if (digitalRead(tUpPin) == LOW) {
-    torqueVal++;
-    Serial.println("Pressed");
-    if (torqueVal > 10) {
-      torqueVal = 10;
-    }
-  } else if (digitalRead(tDownPin) == LOW) {
-    Serial.println("Pressed");
-    torqueVal--;
-    if (torqueVal < 1) {
-      torqueVal = 1;
+  if(time - tuPress > debounceTime && time - tdPress >debounceTime){
+    if (digitalRead(tUpPin) == LOW) {
+      torqueVal++;
+      Serial.println("Pressed");
+      if (torqueVal > 10) {
+        torqueVal = 9;
+      }
+      powerThreshold = torque[torqueVal];
+    } else if (digitalRead(tDownPin) == LOW) {
+      Serial.println("Pressed");
+      torqueVal--;
+      if (torqueVal < 0) {
+        torqueVal = 0;
+      }
+      powerThreshold = torque[torqueVal];
     }
   }
 
