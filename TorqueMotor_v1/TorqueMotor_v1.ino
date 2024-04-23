@@ -63,11 +63,13 @@ void setup() {
   Serial.begin(9600);
 }
 
+// Motor on/off actuation, speed, and direction control
 void motorSettings() {
   time = millis();
+  // Speed value setting
   speedVal = analogRead(vSpeedPin);
   speedVal = speedVal * (255/1023.0);
-  //analogWrite(enablePin, speedVal);
+  // Forward button toggle
   if(time-fBPress > debounceTime){
     if (digitalRead(fBPin) == LOW) {
       Serial.println("Pressed");
@@ -81,6 +83,7 @@ void motorSettings() {
       }
     }
   }
+  // Backward button toggle
   if(time - bBPress > debounceTime){
     if (digitalRead(bBPin) == LOW) {
       Serial.println("Pressed");
@@ -98,11 +101,12 @@ void motorSettings() {
 }
 
 void torqueSettings() {
+  // Torque settings/power threshold changing
   if(time - tuPress > debounceTime && time - tdPress >debounceTime){
     if (digitalRead(tUpPin) == LOW) {
       torqueVal++;
       Serial.println("Pressed");
-      if (torqueVal > 10) {
+      if (torqueVal > 9) {
         torqueVal = 9;
       }
       powerThreshold = torque[torqueVal];
@@ -116,7 +120,7 @@ void torqueSettings() {
     }
   }
 
-  
+  // Power readings and stall detection
   Vin = analogRead(R1in);
   Vout = analogRead(R2out);
   delay(10);
