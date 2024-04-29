@@ -1,14 +1,14 @@
 
 // Direction button pins
-int fBPin = 13;
-int bBPin = 12;
+int fBPin = 12;
+int bBPin = 11;
 bool mftoggle = 0;
 bool mbtoggle = 0;
 
 // Torque value pins
 int torqueVal = 5;
-int tUpPin = 11;
-int tDownPin = 10;
+int tUpPin = 10;
+int tDownPin = 9;
 
 int R1in = A0; 
 int R2out = A1;
